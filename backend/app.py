@@ -11,6 +11,7 @@ load_dotenv()
 # deepseek_api_key = os.getenv('DEEPSEEK_API_KEY')
 openai_api_key = os.getenv('OPENAI_API_KEY')
 openai_base_url = os.getenv('OPENAI_API_BASE')
+
 app = Flask(__name__)
 CORS(app)
 
@@ -19,7 +20,6 @@ def generate_text_completion(model, messages):
     Generates text completion for the given messages using the specified model.
     """
     try:
-        # Generate completion using LiteLLM
         response = completion(model=model, messages=messages)  # noqa: E501
         content = response['choices'][0]['message']['content']
         return {"response": content}
@@ -34,7 +34,6 @@ def index():
 def update_graph():
     text = request.json.get('text', '')
 
-    # Format the message for LiteLLM with examples and the current user input
     messages = [
             {
                 "role": "user",
@@ -43,19 +42,24 @@ def update_graph():
             {
                 "role": "system",
                 "content": f"""
+                  <role>
                   You are an AI expert specializing in knowledge graph creation with the goal of capturing relationships based on a given input or request.
                   Based on the user input in various forms such as paragraph, email, text files, and more.
-                  Your task is to create a knowledge graph based on the input.
+                  </role>
+                  <task>
+                  - Your task is to create a knowledge graph based on the input.
                   Nodes must have a label parameter. where the label is a direct word or phrase from the input.
-                  Edges must also have a label parameter, wher the label is a direct word or phrase from the input.
-                  Respons only with JSON in a format where we can jsonify in python and feed directly into  cy.add(data); to display a graph on the front-end.
+                  - Edges must also have a label parameter, wher the label is a direct word or phrase from the input.
+                  - Respons only with JSON in a format where we can jsonify in python and feed directly into  cy.add(data); to display a graph on the front-end.
                   Make sure the target and source of edges match an existing node.
-                  Do not include the markdown triple quotes above and below the JSON, jump straight into it with a curly bracket.
+                  - Do not include the markdown triple quotes above and below the JSON, jump straight into it with a curly bracket.
+                  - Make sure that the information on the edges between nodes clearly expresses the node relationship and is not meaningless.
+                  </task>
+                  <Your Output>
                 """  # noqa: F541, E501
             }
         ]
 
-    # Process the input through LiteLLM
     # result = generate_text_completion("gpt-4-0125-preview", messages)
     result = generate_text_completion("gpt-4o", messages)
     print(result)

@@ -1,2 +1,2 @@
 # Mind4U 
-    built with Next.js & Flask
+    Data Visualization course design built with `Flask` & `Next.js`
