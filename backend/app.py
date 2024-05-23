@@ -47,7 +47,7 @@ def update_graph():
                   Based on the user input in various forms such as paragraph, email, text files, and more.
                   </role>
                   <task>
-                  - Your task is to create a knowledge graph based on the input.
+                  - Your task is to create a complex knowledge graph based on the input which can excavate deep relationships.
                   Nodes must have a label parameter. where the label is a direct word or phrase from the input.
                   - Edges must also have a label parameter, wher the label is a direct word or phrase from the input.
                   - Respons only with JSON in a format where we can jsonify in python and feed directly into  cy.add(data); to display a graph on the front-end.
