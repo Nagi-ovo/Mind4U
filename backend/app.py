@@ -54,7 +54,7 @@ def deepseek_react(messages):
     """  # noqa: E501
 
     react_prompt = f"""
-    你的工作是根据用户输入内容，请你经过谨慎思考选择下面的一种工具，只需回复工具名称即可(不包括引号)，提醒：大概率使用 WebCrawler:
+    你的工作是根据用户输入内容，请你经过谨慎思考选择下面的一种工具，只需回复工具名称即可(不包括引号)
     {tools}
     """  # noqa: E501
 
@@ -98,6 +98,7 @@ def webScrawler(doc_url) -> str:
     loader = WebBaseLoader(doc_url)
     loader.requests_per_second = 1
     docs = loader.aload()
+    print(docs[0].page_content[:1000])
     return docs[0].page_content
 
 
@@ -201,7 +202,7 @@ def update_graph():
         text = webScrawler(text)
 
     IS_URL = False
-    if len(text) > 200:
+    if len(text) > 2000:
         print("\nCondensing......\n")
         condensed_text = deepseek_react(text)
     else:
