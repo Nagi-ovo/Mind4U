@@ -6,9 +6,10 @@ interface GraphProps {
     nodes: Array<{ data: { id: string, [key: string]: any } }>,
     edges: Array<{ data: { source: string, target: string, [key: string]: any } }>
   };
+  theme: string; // Add theme prop
 }
 
-const GraphDisplay: React.FC<GraphProps> = ({ elements }) => {
+const GraphDisplay: React.FC<GraphProps> = ({ elements, theme }) => {
   const cyContainer = useRef<HTMLDivElement>(null);
   const [cy, setCy] = useState<cytoscape.Core>();
 
@@ -23,7 +24,7 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements }) => {
             style: {
               'background-color': 'data(color)',
               'label': 'data(label)',
-              'color': '#000'
+              'color': theme === 'light' ? '#000' : '#FFF' // Use theme to set text color
             }
           },
           {
@@ -33,7 +34,8 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements }) => {
               'target-arrow-color': 'data(color)',
               'curve-style': 'bezier',
               'target-arrow-shape': 'triangle',
-              'label': 'data(label)'
+              'label': 'data(label)',
+              'color': theme === 'light' ? '#000' : '#FFF' // Use theme to set text color
             }
           }
         ],
@@ -85,9 +87,27 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements }) => {
 
       cy.layout({ name: 'grid' }).run();
     }
-  }, [elements, cy]); // Dependencies
+  }, [elements, cy, theme]);
 
-  return <div ref={cyContainer} className="flex-1" />;
+  useEffect(() => {
+    if (cy) {
+      cy.style()
+        .selector('node')
+        .style({
+          'color': theme === 'light' ? '#000' : '#FFF'
+        })
+        .update();
+
+      cy.style()
+        .selector('edge')
+        .style({
+          'color': theme === 'light' ? '#000' : '#FFF'
+        })
+        .update();
+    }
+  }, [theme, cy]);
+
+  return <div ref={cyContainer} className="flex-1 h-full" />;
 };
 
 export default GraphDisplay;
