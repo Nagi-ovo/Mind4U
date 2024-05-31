@@ -189,7 +189,6 @@ def update_graph():
     try:
         clean_response = result['response'].replace('```', '').strip()
         graph_data = json.loads(clean_response)
-        # print(graph_data)
         return jsonify(graph_data)
     except Exception as e:
         return jsonify({'error': f"Error parsing graph data: {str(e)}"})

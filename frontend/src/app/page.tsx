@@ -7,8 +7,19 @@ import ThemeToggleButton from './components/ThemeToggleButton'; // Import the ne
 
 const GraphDisplay = dynamic(() => import('./components/GraphDisplay'), { ssr: false });
 
+const defaultElements = {
+  nodes: [
+    {'data': {'id': '1', 'label': '王比'}}, {'data': {'id': '2', 'label': '男孩'}}, {'data': {'id': '3', 'label': '篮球'}}, {'data': {'id': '4', 'label': '科比'}}, {'data': {'id': '5', 'label': '黑曼巴'}}
+  ],
+  edges: [
+    {'data': {'source': '1', 'target': '2', 'label': '性别'}}, {'data': {'source': '1', 'target': '3', 'label': '喜欢'}}, {'data': {'source': '1', 'target': '4', 'label': '偶像'}}, {'data': {'source': '4', 'target': '5', 'label': '绰号'}}
+  ]
+}; // 默认的知识图谱 JSON 结果
+
+const defaultText = "有一个叫王比的男孩，他非常喜欢打篮球，他的偶像是科比-黑曼巴。"; // 默认输入例子
+
 const Home: React.FC = () => {
-  const [elements, setElements] = useState<{ nodes: any[], edges: any[] }>({ nodes: [], edges: [] });
+  const [elements, setElements] = useState<{ nodes: any[], edges: any[] }>(defaultElements); // 使用默认的知识图谱 JSON 结果
   const [theme, setTheme] = useState('light'); // Default theme is light
   const [isClient, setIsClient] = useState(false);
 
@@ -52,7 +63,7 @@ const Home: React.FC = () => {
       <div className={`flex h-screen overflow-hidden ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-900'}`}>
         <div className={`flex-1 flex flex-col p-4 m-4 rounded-lg shadow-lg overflow-hidden ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
           <h2 className="text-2xl font-bold mb-4">Text Input</h2>
-          <TextInput onTextSubmit={handleTextSubmit} theme={theme} />
+          <TextInput onTextSubmit={handleTextSubmit} theme={theme} defaultText={defaultText} />
         </div>
         <div className={`flex-1 p-4 m-4 rounded-lg shadow-lg overflow-hidden relative ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
           <h2 className="text-2xl font-bold mb-4">Graph Display</h2>
@@ -67,4 +78,3 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-

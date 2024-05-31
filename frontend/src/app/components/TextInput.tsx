@@ -3,9 +3,10 @@ import React, { useRef, useEffect } from 'react';
 interface TextInputProps {
   onTextSubmit: (text: string) => void;
   theme: string; // Add theme prop
+  defaultText?: string; // Add defaultText prop
 }
 
-const TextInput: React.FC<TextInputProps> = ({ onTextSubmit, theme }) => {
+const TextInput: React.FC<TextInputProps> = ({ onTextSubmit, theme, defaultText }) => {
   const textRef = useRef<HTMLDivElement>(null);
 
   const handleInput = (event: React.FormEvent<HTMLDivElement>) => {
@@ -21,8 +22,11 @@ const TextInput: React.FC<TextInputProps> = ({ onTextSubmit, theme }) => {
   useEffect(() => {
     if (textRef.current) {
       textRef.current.focus();
+      if (defaultText) {
+        textRef.current.innerText = defaultText;
+      }
     }
-  }, []);
+  }, [defaultText]);
 
   return (
     <div
