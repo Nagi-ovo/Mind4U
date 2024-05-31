@@ -11,8 +11,7 @@ const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ theme, toggleThem
       className={`relative w-20 h-10 rounded-full transition-colors duration-300 cursor-pointer ${
         theme === 'light' ? 'bg-yellow-500' : 'bg-blue-800'
       }`}
-      onMouseUp={toggleTheme}
-      onTouchEnd={toggleTheme}
+      onMouseDown={toggleTheme}  
     >
       <div
         className={`absolute top-1 left-1 w-8 h-8 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
