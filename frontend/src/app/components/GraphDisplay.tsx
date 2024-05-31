@@ -7,9 +7,10 @@ interface GraphProps {
     edges: Array<{ data: { source: string, target: string, [key: string]: any } }>
   };
   theme: string; // Add theme prop
+  toggleTheme: () => void; // Add toggleTheme prop
 }
 
-const GraphDisplay: React.FC<GraphProps> = ({ elements, theme }) => {
+const GraphDisplay: React.FC<GraphProps> = ({ elements, theme, toggleTheme }) => {
   const cyContainer = useRef<HTMLDivElement>(null);
   const [cy, setCy] = useState<cytoscape.Core>();
 
@@ -24,7 +25,7 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements, theme }) => {
             style: {
               'background-color': 'data(color)',
               'label': 'data(label)',
-              'color': theme === 'light' ? '#000' : '#FFF' // Use theme to set text color
+              'color': theme === 'light' ? '#000' : '#FFF'
             }
           },
           {
@@ -35,7 +36,7 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements, theme }) => {
               'curve-style': 'bezier',
               'target-arrow-shape': 'triangle',
               'label': 'data(label)',
-              'color': theme === 'light' ? '#000' : '#FFF' // Use theme to set text color
+              'color': theme === 'light' ? '#000' : '#FFF'
             }
           }
         ],
@@ -51,7 +52,7 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements, theme }) => {
     }
 
     if (cy) {
-      cy.elements().remove(); // Clear the graph
+      cy.elements().remove();
       const colors = [
         "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF",
         "#B5EAD7", "#ECC5FB", "#FFC3A0", "#FF9AA2", "#FFDAC1",
@@ -67,14 +68,12 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements, theme }) => {
       ];
       let colorIndex = 0;
 
-      // Prepare nodes with explicitly set group type
       const preparedNodes = elements.nodes.map(node => ({
         group: 'nodes' as ElementGroup, 
         data: { ...node.data, color: colors[colorIndex++ % colors.length] }
       }));
       cy.add(preparedNodes);
 
-      // Prepare edges with explicitly set group type
       const preparedEdges = elements.edges.filter(edge =>
         edge.data && edge.data.source && edge.data.target &&
         cy.getElementById(edge.data.source).length > 0 &&
@@ -107,7 +106,11 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements, theme }) => {
     }
   }, [theme, cy]);
 
-  return <div ref={cyContainer} className="flex-1 h-full" />;
+  return (
+    <div className={`relative flex-1 h-full rounded-lg shadow-lg ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
+      <div ref={cyContainer} className="absolute inset-0" />
+    </div>
+  );
 };
 
 export default GraphDisplay;

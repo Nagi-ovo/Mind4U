@@ -49,14 +49,16 @@ const Home: React.FC = () => {
       <Head>
         <title>Text to Graph</title>
       </Head>
-      <div className="flex h-screen overflow-hidden">
-        <div className="flex-1 flex flex-col overflow-auto">
-          <TextInput onTextSubmit={handleTextSubmit} />
+      <div className={`flex h-screen overflow-hidden ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-900'}`}>
+        <div className={`flex-1 flex flex-col p-4 m-4 rounded-lg shadow-lg overflow-hidden ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
+          <h2 className="text-2xl font-bold mb-4">Text Input</h2>
+          <TextInput onTextSubmit={handleTextSubmit} theme={theme} />
         </div>
-        <div className="flex-1 overflow-auto">
-          <GraphDisplay elements={elements} theme={theme} /> {/* Pass theme to GraphDisplay */}
+        <div className={`flex-1 p-4 m-4 rounded-lg shadow-lg overflow-hidden relative ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
+          <h2 className="text-2xl font-bold mb-4">Graph Display</h2>
+          <GraphDisplay elements={elements} theme={theme} toggleTheme={toggleTheme} />
         </div>
-        <div className="absolute top-4 right-4 flex items-center">
+        <div className="absolute top-8 right-8"> {/* Adjust the top and right padding */}
           <ThemeToggleButton theme={theme} toggleTheme={toggleTheme} />
         </div>
       </div>
@@ -65,3 +67,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
