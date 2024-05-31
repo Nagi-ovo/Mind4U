@@ -107,46 +107,20 @@ def generate_graph(text):
     Generate a graph from the given text.
     """
     print("\nGenerating graph...\n")
-    one_shot_prompt = """{
-    "nodes": [
-        {
-        "data": { "id": "1", "label": "Jack" }
-        },
-        {
-        "data": { "id": "2", "label": "boy" }
-        }
-        {
-        "data": { "id": "3", "label": "horse" }
-        },
-        {
-        "data": { "id": "4", "label": "white" }
-        },
-    ],
-    "edges": [
-        {
-        "data": {
-            "source": "1",
-            "target": "2",
-            "label": "gender"
-        }
-        },
-        {
-        "data": {
-            "source": "1",
-            "target": "3",
-            "label": "is ridding"
-        }
-        },
-        {
-        "data": {
-            "source": "3",
-            "target": "4",
-            "label": "color"
-        }
-        }
-    ]
-    }
-    """
+
+    # Few-shot prompt for the LMM to understand the task
+    with open("prompt.json", "r") as f:
+        json_data = f.read()
+
+    data = json.loads(json_data)
+
+    few_shot_prompt = ""
+    for _, example_value in data.items():
+        input_text = example_value["input"]
+        nodes = example_value["nodes"]
+        edges = example_value["edges"]
+
+        few_shot_prompt += f'input: "{input_text}"\noutput: nodes: [{nodes}], edges: [{edges}]\n'  # noqa: E501
 
     messages = [
             {
@@ -157,16 +131,14 @@ def generate_graph(text):
                 "role": "system",
                 "content": f"""
                   <role>
-                  You are an AI expert specializing in knowledge graph creation with the goal of capturing relationships based on a given input or request.
-                  Based on the user input in various forms such as paragraph, email, text files, and more.
+                  You are an AI expert specializing in knowledge graph creation.
                   </role>
                   <task>
                   Your task is to create a complex knowledge graph based on the input which can excavate deep relationships.
                   Nodes must have a label parameter. where the label is a direct word or phrase from the input.
                   <Example>
-                  You should learn the pattern of this example, use specific relationships instead of "is"
-                  Input: Jack is a boy who is riding a white horse.
-                  Output: {one_shot_prompt}
+                  You should learn the pattern of these examples below, think step by step, learn how to use **instinct relationships** instead of something like "is a".
+                  {few_shot_prompt}
                   </Example>
                   </task>
                   <Precautions>
@@ -175,7 +147,7 @@ def generate_graph(text):
                   Make sure the target and source of edges match an existing node.
                   - Do not include the markdown triple quotes above and below the JSON, jump straight into it with a curly bracket.
                   - Make sure that the information on the edges between nodes clearly expresses the node relationship and is not meaningless.
-                  </Precautions>
+                    </Precautions>
                   <Your Output>
                 """  # noqa: F541, E501
             }

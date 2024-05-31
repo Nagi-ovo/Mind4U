@@ -1,0 +1,106 @@
+{
+    "example_1": {
+        "input": "A boy name Jack is ridding a white horse.",
+        "nodes": [
+            {
+            "data": { "id": "1", "label": "Jack" }
+            },
+            {
+            "data": { "id": "2", "label": "boy" }
+            },
+            {
+            "data": { "id": "3", "label": "horse" }
+            },
+            {
+            "data": { "id": "4", "label": "white" }
+            }
+        ],
+        "edges": [
+            {
+            "data": {
+                "source": "1",
+                "target": "2",
+                "label": "gender"
+            }
+            },
+            {
+            "data": {
+                "source": "1",
+                "target": "3",
+                "label": "ride"
+            }
+            },
+            {
+            "data": {
+                "source": "3",
+                "target": "4",
+                "label": "color"
+            }
+            }
+        ]
+    },
+    "example_2": {
+        "input": "小明很喜欢吃水果，比如苹果，小明现在上三年级，是班里的男班长",
+        "nodes": [
+            {
+            "data": { "id": "1", "label": "小明" }
+            },
+            {
+            "data": { "id": "2", "label": "男生" }
+            },
+            {
+            "data": { "id": "3", "label": "水果" }
+            },
+            {
+            "data": { "id": "4", "label": "三年级" }
+            },
+            {
+            "data": { "id": "5", "label": "水果" }
+            },
+            {
+            "data": { "id": "6", "label": "苹果" }
+            },
+            {
+            "data": { "id": "7", "label": "班长" }
+            }
+
+        ],
+        "edges": [
+            {
+            "data": {
+                "source": "1",
+                "target": "2",
+                "label": "性别"
+            }
+            },
+            {
+            "data": {
+                "source": "1",
+                "target": "3",
+                "label": "喜欢的食物"
+            }
+            },
+            {
+            "data": {
+                "source": "1",
+                "target": "4",
+                "label": "年级"
+            }
+            },
+            {
+            "data": {
+                "source": "3",
+                "target": "5",
+                "label": "包含"
+            }
+            },
+            {
+            "data": {
+                "source": "1",
+                "target": "7",
+                "label": "班级职务"
+            }
+            }
+        ]
+    }
+}
