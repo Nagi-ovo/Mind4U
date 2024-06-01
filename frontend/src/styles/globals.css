@@ -6,6 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --transition-duration: 1.2s;
 }
 
 [data-theme="dark"] {
@@ -22,11 +23,23 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color var(--transition-duration), color var(--transition-duration);
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.flex-1 {
+  transition: background-color var(--transition-duration);
+}
+
+.relative {
+  transition: background-color var(--transition-duration);
+}
+
+.absolute {
+  transition: background-color var(--transition-duration);
 }

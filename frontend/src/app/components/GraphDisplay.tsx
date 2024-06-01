@@ -107,7 +107,7 @@ const GraphDisplay: React.FC<GraphProps> = ({ elements, theme, toggleTheme }) =>
   }, [theme, cy]);
 
   return (
-    <div className={`relative flex-1 h-full rounded-lg shadow-lg ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
+    <div className={`relative flex-1 h-full rounded-lg shadow-lg transition-colors duration-1000 ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
       <div ref={cyContainer} className="absolute inset-0" />
     </div>
   );
