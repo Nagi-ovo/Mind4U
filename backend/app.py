@@ -103,12 +103,8 @@ def webScrawler(doc_url) -> str:
 
 
 def generate_graph(text):
-    """
-    Generate a graph from the given text.
-    """
     print("\nGenerating graph...\n")
 
-    # Few-shot prompt for the LMM to understand the task
     with open("prompt.json", "r") as f:
         json_data = f.read()
 
@@ -123,39 +119,61 @@ def generate_graph(text):
         few_shot_prompt += f'input: "{input_text}"\noutput: nodes: [{nodes}], edges: [{edges}]\n'  # noqa: E501
 
     messages = [
-            {
-                "role": "user",
-                "content": f"{text}"
-            },
-            {
-                "role": "system",
-                "content": f"""
-                  <role>
-                  You are an AI expert specializing in knowledge graph creation.
-                  </role>
-                  <task>
-                  Your task is to create a complex knowledge graph based on the input which can excavate deep relationships.
-                  Nodes must have a label parameter. where the label is a direct word or phrase from the input.
-                  <Example>
-                  You should learn the pattern of these examples below, think step by step, learn how to use **instinct relationships** instead of something like "is a".
-                  {few_shot_prompt}
-                  </Example>
-                  </task>
-                  <Precautions>
-                  - Edges must also have a label parameter, wher the label is a direct word or phrase from the input.
-                  - Respons only with JSON in a format where we can jsonify in python and feed directly into  cy.add(data); to display a graph on the front-end.
-                  Make sure the target and source of edges match an existing node.
-                  - Do not include the markdown triple quotes above and below the JSON, jump straight into it with a curly bracket.
-                  - Make sure that the information on the edges between nodes clearly expresses the node relationship and is not meaningless.
-                    </Precautions>
-                  <Your Output>
-                """  # noqa: F541, E501
-            }
-        ]
+        {
+            "role": "user",
+            "content": f"{text}"
+        },
+        {
+            "role": "system",
+            "content": f"""
+              ## Role
+              You are an AI expert specializing in knowledge graph creation.
+              ## Task
+              Your task is to create a complex knowledge graph based on the input which can excavate deep relationships.
+              Nodes must have a label parameter. where the label is a direct word or phrase from the input.
+              ### Example
+              You should learn the pattern of these examples below, think step by step, learn how to use **instinct relationships** instead of something like "is a".
+              {few_shot_prompt}
+              ## Precautions
+              - Edges must also have a label parameter, where the label is a direct word or phrase from the input.
+              - Respond only with JSON in a format where we can jsonify in python and feed directly into cy.add(data); to display a graph on the front-end.
+              Make sure the target and source of edges match an existing node.
+              - Do not include the markdown triple quotes above and below the JSON, jump straight into it with a curly bracket.
+              - Make sure that the information on the edges between nodes clearly expresses the node relationship and is not meaningless.
+              ## Your Output
+            """  # noqa: F541, E501
+        }
+    ]
 
     result = generate_text_completion("gpt-4o", messages)
-    # result = generate_text_completion("deepseek/deepseek-chat", messages)
-    return result
+    
+    # Assume result['response'] is a JSON string with nodes and edges
+    response_data = json.loads(result['response'])
+
+    colors = [
+        "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF",
+        "#B5EAD7", "#ECC5FB", "#FFC3A0", "#FF9AA2", "#FFDAC1",
+        "#E2F0CB", "#B5EAD7", "#C7CEEA", "#FFB7B2", "#FF9AA2",
+        "#FFDAC1", "#C7CEEA", "#FFB3BA", "#FFDFBA", "#FFFFBA",
+        "#BAFFC9", "#BAE1FF", "#FFC3A0", "#FF9AA2", "#FFDAC1",
+        "#E2F0CB", "#B5EAD7", "#C7CEEA", "#FFB7B2", "#FF9AA2",
+        "#FFDAC1", "#C7CEEA", "#FFB3BA", "#FFDFBA", "#FFFFBA",
+        "#BAFFC9", "#BAE1FF", "#FFC3A0", "#FF9AA2", "#FFDAC1",
+        "#E2F0CB", "#B5EAD7", "#C7CEEA", "#FFB7B2", "#FF9AA2",
+        "#FFDAC1", "#C7CEEA", "#FFB3BA", "#FFDFBA", "#FFFFBA",
+        "#BAFFC9", "#BAE1FF", "#FFC3A0", "#FF9AA2", "#FFDAC1"
+    ]
+    
+    color_index = 0
+    for node in response_data['nodes']:
+        node['data']['color'] = colors[color_index % len(colors)]
+        color_index += 1
+    
+    for edge in response_data['edges']:
+        edge['data']['color'] = colors[color_index % len(colors)]
+        color_index += 1
+
+    return {'response': json.dumps(response_data)}
 
 
 @app.route('/')
@@ -167,31 +185,37 @@ def update_graph():
     global IS_URL
     IS_URL = True
     text = request.json.get('text', '')
-    action = deepseek_react(text) 
+    action = deepseek_react(text)
     print(text, action)
     if action == "WebCrawler":
         print("\nUsing WebCrawler Tool......\n")
         text = webScrawler(text)
-
-    IS_URL = False
-    if len(text) > 2000:
-        print("\nCondensing......\n")
-        condensed_text = deepseek_react(text)
+        IS_URL = False
+        if len(text) > 2000:
+            print("\nCondensing......\n")
+            condensed_text = deepseek_react(text)
+        else:
+            condensed_text = text
+        result = generate_graph(condensed_text)
     else:
-        condensed_text = text
-
-    result = generate_graph(condensed_text)
+        IS_URL = False
+        if len(text) > 2000:
+            print("\nCondensing......\n")
+            condensed_text = deepseek_react(text)
+        else:
+            condensed_text = text
+        result = generate_graph(condensed_text)
 
     if 'error' in result:
         return jsonify({'error': result['error']})
 
-    # Convert the content string into JSON format (assuming JSON content is returned)
     try:
         clean_response = result['response'].replace('```', '').strip()
         graph_data = json.loads(clean_response)
-        return jsonify(graph_data)
+        return jsonify({'graph': graph_data, 'text': condensed_text})
     except Exception as e:
         return jsonify({'error': f"Error parsing graph data: {str(e)}"})
+
 
 
 if __name__ == '__main__':

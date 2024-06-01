@@ -9,10 +9,17 @@ const GraphDisplay = dynamic(() => import('./components/GraphDisplay'), { ssr: f
 
 const defaultElements = {
   nodes: [
-    {'data': {'id': '1', 'label': '王比'}}, {'data': {'id': '2', 'label': '男孩'}}, {'data': {'id': '3', 'label': '篮球'}}, {'data': {'id': '4', 'label': '科比'}}, {'data': {'id': '5', 'label': '黑曼巴'}}
+    {'data': {'id': '1', 'label': '王比', 'color': '#FFB3BA'}},
+    {'data': {'id': '2', 'label': '男孩', 'color': '#FFDFBA'}},
+    {'data': {'id': '3', 'label': '篮球', 'color': '#FFFFBA'}},
+    {'data': {'id': '4', 'label': '科比', 'color': '#BAFFC9'}},
+    {'data': {'id': '5', 'label': '黑曼巴', 'color': '#BAE1FF'}}
   ],
   edges: [
-    {'data': {'source': '1', 'target': '2', 'label': '性别'}}, {'data': {'source': '1', 'target': '3', 'label': '喜欢'}}, {'data': {'source': '1', 'target': '4', 'label': '偶像'}}, {'data': {'source': '4', 'target': '5', 'label': '绰号'}}
+    {'data': {'source': '1', 'target': '2', 'label': '性别', 'color': '#B5EAD7'}},
+    {'data': {'source': '1', 'target': '3', 'label': '喜欢', 'color': '#ECC5FB'}},
+    {'data': {'source': '1', 'target': '4', 'label': '偶像', 'color': '#FFC3A0'}},
+    {'data': {'source': '4', 'target': '5', 'label': '绰号', 'color': '#FF9AA2'}}
   ]
 }; // default JSON result
 
@@ -22,6 +29,7 @@ const Home: React.FC = () => {
   const [elements, setElements] = useState<{ nodes: any[], edges: any[] }>(defaultElements); // 使用默认的知识图谱 JSON 结果
   const [theme, setTheme] = useState('light'); // Default theme is light
   const [isClient, setIsClient] = useState(false);
+  const [inputText, setInputText] = useState(defaultText);
 
   useEffect(() => {
     const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -44,7 +52,16 @@ const Home: React.FC = () => {
       body: JSON.stringify({ text })
     })
       .then(response => response.json())
-      .then(data => setElements({ nodes: data.nodes || [], edges: data.edges || [] }))
+      .then(data => {
+        if (data.text && data.graph) {
+          setInputText(data.text); // 设置压缩后的文本内容
+          setElements({ nodes: data.graph.nodes || [], edges: data.graph.edges || [] });
+        } else if (data.text) {
+          setInputText(data.text); // 设置压缩后的文本内容
+        } else if (data.graph) {
+          setElements({ nodes: data.graph.nodes || [], edges: data.graph.edges || [] });
+        }
+      })
       .catch(err => console.error('Failed to fetch graph data:', err));
   };
 
@@ -64,7 +81,7 @@ const Home: React.FC = () => {
       <div className={`flex h-screen overflow-hidden transition-colors duration-500 ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-900'}`}>
         <div className={`flex-1 flex flex-col p-4 m-4 rounded-lg shadow-lg overflow-hidden transition-colors duration-500 ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
           <h2 className="text-2xl font-bold mb-4">Text Input</h2>
-          <TextInput onTextSubmit={handleTextSubmit} theme={theme} defaultText={defaultText} />
+          <TextInput onTextSubmit={handleTextSubmit} theme={theme} defaultText={defaultText} highlightData={elements} inputText={inputText} />
         </div>
         <div className={`flex-1 p-4 m-4 rounded-lg shadow-lg overflow-hidden relative transition-colors duration-500 ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-800'}`}>
           <h2 className="text-2xl font-bold mb-4">Graph Display</h2>
