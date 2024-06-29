@@ -9,7 +9,7 @@ python = ">=3.10.0,<3.11"
 flask = "^3.0.0"
 gunicorn = "^21.2.0"
 skills = "^0.3.0"
-litellm = "^1.35.33"
+litellm = "^1.40.16"
 python-dotenv = "^0.20.0"
 httpx = {extras = ["socks"], version = "^0.27.0"}
 flask-cors = "^4.0.1"
