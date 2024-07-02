@@ -1,6 +1,12 @@
 # Mind4U 
     Data Visualization course design built with `Flask` & `Next.js`
 
+## Demo
+
+
+https://github.com/Nagi-ovo/Mind4U/assets/101612750/a64b08cf-fc61-49bb-8ae8-2b2bc78c8709
+
+
 ## Project significance
 
   In the age of information explosion, all kinds of news and articles flood into our sight like a tide. Using GPT model can quickly summarize the article, so that we can understand the surface content of the article in a short time, but if we want to deeply understand the details and internal relations of the article, we need other information and data representation, and knowledge graph is the best solution for this need.  
